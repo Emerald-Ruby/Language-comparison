@@ -1,10 +1,2 @@
 
-Lang - Rust/hello-world/target/.rustc_info.json
-Lang - Rust/hello-world/target/debug/.cargo-lock
-Lang - Rust/hello-world/target/debug/.fingerprint/hello-world-31575611330ae74a/dep-test-bin-hello-world
-Lang - Rust/hello-world/target/debug/.fingerprint/hello-world-31575611330ae74a/invoked.timestamp
-Lang - Rust/hello-world/target/release/hello-world.d
-/Lang - Rust/hello-world/target/release/deps
-/Lang - Rust/hello-world/target/release/.fingerprint
-/Lang - Rust/hello-world/target/debug
-Lang - Rust/hello-world/target/release/.cargo-lock
+Lang - Rust/hello-world/target
