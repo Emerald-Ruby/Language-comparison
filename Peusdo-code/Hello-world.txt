@@ -1,0 +1,4 @@
+Constant:
+    hello = "Hello world!!"
+
+output hello
