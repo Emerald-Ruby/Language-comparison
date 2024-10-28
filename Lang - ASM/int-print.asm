@@ -1,5 +1,5 @@
 section .data
-    numbera equ 1234097
+    numbera equ 129
 
 section .bss
     hstdout resq 1              ; Reserve 64-bit space for standard output handle
