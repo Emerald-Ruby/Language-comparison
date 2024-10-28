@@ -53,8 +53,7 @@ WinMain:
     call ReadConsoleA
 ;----------------------------------------------------------
 
-    ; Optionally, you could echo the input back to the console
-    ; Example of printing back the input received
+    ; I did not hit her. I did not.
     mov rcx, [rel hstdout]       ; Handle to standard output
     lea rdx, [rel input_buffer]  ; Pointer to the input buffer
     mov r8,  [rel input_len]     ; Length of the input (from input_len variable)
