@@ -1,0 +1,4 @@
+Constant:
+    numbera 129
+
+output numbera
