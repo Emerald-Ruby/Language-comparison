@@ -5,3 +5,7 @@ Lang - Rust/hello-world/target
 /Lang - Fortran/build
 /Lang - Rust/int-print/target
 /Lang - Lobster/.vscode
+/Lang - Rust/in-out/target
+/Lang - JS-TS/node_modules
+Lang - JS-TS/package-lock.json
+Lang - JS-TS/package.json

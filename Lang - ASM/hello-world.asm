@@ -10,8 +10,14 @@ section .text
     global WinMain ; `int main()` in C
 
 WinMain:
+; Prolog
+    ; Set the stack frame
+    push rbp
+    mov rbp, rsp
+    sub rsp, 32             ; Space for calling convention
+
     ; Get the STDOUT
-    mov rcx, -11            ; rcx - first argument in calling convention
+    mov ecx, -11            ; rcx - first argument in calling convention
     call GetStdHandle
     mov [rel hstdout], rax  ; Use RIP-relative addressing to store handle
 
@@ -20,10 +26,11 @@ WinMain:
     mov rdx, hello          ; rdx: pointer to the message
     mov r8, str_len         ; r8: length of the message
     mov r9, 0               ; r9: reserved, must be NULL
-    sub rsp, 32             ; Align stack to 32 bytes - Win64 requirement
     call WriteConsoleA
 
-    add rsp, 32 ; Restore stack alignment
+; Restore the stack
+    mov rsp, rbp
+    pop rbp
 
     ; Exit the process
     ; ecx is the exit code
