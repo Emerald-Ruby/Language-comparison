@@ -1,0 +1,27 @@
+Constants:
+    prompt  : string = "Please enter one of the following"
+    tab     : string = "\t"
+    type    : string = "type"
+    ts      : string = "typescript"
+    js      : string = "javascript"
+    anything: string = "Or anything"
+
+input:
+    selection: string
+
+algorithm:
+    input selection
+
+    output prompt + others
+
+    if selection is "", then
+        out "That's nothing!"
+
+    if selection is "Type", then
+        out "safety!"
+
+    if selection is "Typescript" or "Javascript", then
+        output "Ew ew ew ew away!"
+    
+    else:
+        output "Hmm yes I see" selection
