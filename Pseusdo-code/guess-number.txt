@@ -1,0 +1,18 @@
+variables:
+    random_num : int || random number from 0 to 9
+input:
+    user_guess : int
+
+algarithm:
+    set random_num
+
+    loop while user_guess is not the random_num
+        output "Please guess a number from 0 to 9
+        input (">> ") user_guess
+
+        if user_guess is greater then random_num
+            output "That is a little too high"
+        if user_guess is less then random_num
+            output "That is a little too low"
+
+    output "That's correct! Well done!"

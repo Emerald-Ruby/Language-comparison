@@ -39,3 +39,15 @@ ymm0-ymm15  |     AVX ops       |  256 bits |   256-bit registers for AVX (Advan
 ------------|-------------------|-----------|-------------------------------------------------------------------------------------------|
 zmm0-zmm31  | AVX-512 "SIMD ops"|  512 bits |   512-bit registers used in AVX-512 for high-performance SIMD operations                  |
 ------------|-------------------|-----------|-------------------------------------------------------------------------------------------|
+
+
+
+resb 64   Reserves 64 bytes   [ Strings  ]
+resd 1    Reserves 4  bytes   [ Integers ]
+resq 1    Reserves 8  bytes   [ Long ints]
+resd 10   Reserves 40 bytes   [Array 10*4]
+
+resb        Reserve byte
+resd        Reserve digit
+resq        Reserve long digit
+resd        Reserve 10s

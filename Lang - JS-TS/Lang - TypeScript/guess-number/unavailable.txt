@@ -1,0 +1,3 @@
+Due to how Javascript and Typescript ( Type script translates to JS )
+you can not call an input and loop unless you do recursion, which in the hands
+of the user can be a security risk, due to stack overflow errors

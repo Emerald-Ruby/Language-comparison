@@ -10,3 +10,5 @@ Lang - Rust/hello-world/target
 Lang - JS-TS/package-lock.json
 Lang - JS-TS/package.json
 /Lang - Rust/conditions/target
+/Lang - Rust/guess-number/target
+Lang - Rust/guess-number/Cargo.lock
