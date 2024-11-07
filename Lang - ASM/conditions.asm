@@ -1,251 +1,249 @@
-; Hi! lets see me code conditions in asm
-
 section .data
-    NEWLINE db 10
-    TAB     db 9
+    nl           db     10
+    tab          db     9
+    arrow        db     ">> "
 
-    PROMPT db "Please pick one of the following", 0
-    prompt_len equ $ - PROMPT
+    prompt       db     "Please enter on of the following"
+    prompt_len   equ    $ - prompt
 
-    TYPE db "type"
-    type_len equ $ - TYPE
+    type         db     "type"
+    type_len     equ    $ - type
 
-    TS db "typescript", 0
-    ts_len equ $ - TS
+    ts           db     "typescript"
+    js_          db     "javascript"
+    tsjs_len     equ    $ - ts
 
-    JS_ db "javascript", 0
-    js_len equ $ - JS_
+    anything     db     "Or anything!"
+    anything_len equ    $ - anything
 
-    ANYTHING db "Or anything!", 0
-    any_len equ $ - ANYTHING
 
-;-------------------------------------------------
-;       Output message
-;-------------------------------------------------
-    nothing      db  "That's nothing!"    , 0
-    nothing_len  equ $ - nothing
+    nothing      db     "That's nothing!"
+    nothing_len  equ    $ - nothing
 
-    safety       db  "Safety!"            , 0
-    safety_len   equ $ - safety
+    safety       db     "safety"
+    safety_len   equ    $ - safety
 
-    jts          db  "Ew ew ew ew away!"  , 0
-    jts_len      equ $ - jts
+    the_scripts  db     "Ew ew ew ew away!"
+    scripts_len  equ    $ - the_scripts
 
-    anything     db  "Hmm yes I see, "    ; No 0 ("\0")
-    anything_len equ $ - anything
+    ic           db     "Hmm yes I see, "
+    ic_len       equ    $ - ic
+
 
 section .bss
-    hstdout resq 1
-    hstdin resq 1                ; Handle for standard input
-    input_buffer resb 64         ; Buffer for user input
-    input_len resd 1             ; Variable to store the length of input read
-
+    stdio_out resq 1
+    stdio_in  resq 1
 
 section .text
-    extern GetStdHandle, WriteConsoleA, ReadConsoleA, ExitProcess ; Windows.h apis
-    global WinMain ; `int main()` in C
+    extern ExitProcess
+    extern GetStdHandle
+    extern WriteConsoleA, ReadConsoleA
+    global WinMain
 
-; args :
-; rdx  : String*
-; r8   : size_t
+; rdx
+; r8
 print:
-; Prolog
-    push rbp
-    mov rbp, rsp
-    sub rsp, 32
-
-    ; Write to the console
-    mov rcx, [rel hstdout]  ; rcx: handle to standard output, RIP-relative
-    mov r9, 0               ; r9: reserved, must be NULL
-    call WriteConsoleA
-
-    mov rsp, rbp
-    pop rbp
-    ret
-
-; rdx   : string*
-; r8    : size_t
-print_newline:
+;----------------------
 ;   Prolog
-;-------------------------
     push rbp
-    mov rbp, rsp
-;-------------------------
-;   Body
-;-------------------------
-    test r10, r10
-    jne .no_tab
-;   Print a tab
-;-------------------------
-    push rdx
-    push r8
-    mov rdx, TAB
-    mov r8, 1
-    call print
-    pop r8
-    pop rdx
-;-------------------------
-    .no_tab:
-    call print
-
-    push rdx
-    push r8
-
-    mov rdx, NEWLINE
-    mov r8, 1
-    call print
-    pop r8
-    pop rdx
-;   Exit the function
-;-------------------------
-    mov rsp, rbp
-    pop rbp
+    mov  rbp, rsp
+    push rcx
+    push r9
+    sub  rsp, 32
+;----------------------
+; Body
+    mov  rcx, [rel stdio_out]
+    mov  r9 , 0
+    call WriteConsoleA
+;----------------------
+;   End
+.defer_print:
+    pop  r9
+    pop  rcx
+    mov  rsp, rbp
+    pop  rbp
     ret
+
+
+
+; rbx for tabs
+println:
+;----------------------
+    push rbp
+    mov  rbp, rsp
+    push rdx          ; rbp - 4
+    push r8           ; rbp - 8
+    push rbx
+;----------------------
+
+    test rbx, rbx
+    jz .print
+    push rdx
+    push r8
+    mov  rdx, tab
+    mov  r8 , 1
+    call print
+    pop  r8
+    pop  rdx
+.print:
+    call print
+
+    mov  rdx, nl
+    mov  r8 , 1
+    call print
+
+;----------------------
+.defer_println:
+    pop  rbx
+    pop  r8
+    pop  rdx
+    pop  rbp
+    ret
+
+;   rsi     stra*
+;   rdx     strb*
+;   rdi     num_loops
+compare_str:
+    push rbp
+    mov  rbp, rsp
+
+    push rsi
+    push rdx
+    push rdi
+    mov  rax, 1
+; While [loop]
+.W1:
+    ; test rdi, rdi doesn't work?
+    test edi, edi
+    jz  .defer_compare_str
+    mov  cl, byte [rsi]
+    cmp  cl, byte [rdx]
+    jne .return_false
+    inc  rsi
+    inc  rdx
+    dec  rdi
+    jmp  .W1
+
+.return_false:
+    mov rax, 0
+.defer_compare_str:
+    pop  rdi
+    pop  rdx
+    pop  rsi
+    mov  rsp, rbp
+    pop  rbp
+    ret
+
 
 WinMain:
-; Prolog
-    push rbp        ; Someone else's Stack Frame
-    mov rbp, rsp
-    sub rsp, 32     ; 32 bytes for stack shadow padding
+;----------------------
+;   Prolog
+    push rbp
+    mov  rbp, rsp
+    sub  rsp, 112       ; [rbp - 64], [rbp - 68]
+;----------------------
+;   Body
 
-    mov ecx, -11            ; STDOUT
-    call GetStdHandle       ; HANDLE
-    mov [rel hstdout], rax  ; Put in the address space of hstdout
+    mov  rcx, -11
+    call GetStdHandle
+    mov  [rel stdio_out], rax
 
-    mov ecx, -10                ; STDIN
-    call GetStdHandle           ; HANDLE
-    mov [rel hstdin], rax       ; Store handle in hstdin
+    mov  rcx, -10
+    call GetStdHandle
+    mov  [rel stdio_in], rax
+
+;------------------------------
+    mov  rdx, prompt
+    mov  r8 , prompt_len
+    call println
+
+    mov  rbx, 1
+    mov  rdx, type
+    mov  r8 , type_len
+    call println
+    mov  rdx, ts
+    mov  r8 , tsjs_len
+    call println
+    mov  rdx, js_
+    mov  r8 , tsjs_len
+    call println
+    mov  rdx, anything
+    mov  r8 , anything_len
+    call println
+;------------------------------
+    mov  rdx, arrow
+    mov  r8 , 3
+    call print
 
 
-    mov rdx, PROMPT
-    mov r8 , prompt_len
-    call print_newline
-
-    mov r10, 0
-    mov rdx, TYPE
-    mov r8 , type_len
-    call print_newline
-
-    mov r10, 0
-    mov rdx, TS
-    mov r8 , ts_len
-    call print_newline
-
-    mov r10, 0
-    mov rdx, JS_
-    mov r8 , js_len
-    call print_newline
-
-    mov r10, 0
-    mov rdx, ANYTHING
-    mov r8 , any_len
-    call print_newline
-
-; Read in
-;----------------------------------------------------------
-    mov rcx, [rel hstdin]        ; rcx: handle to standard input
-    lea rdx, [rel input_buffer]  ; rdx: pointer to input buffer
-    mov r8, 64                   ; r8: buffer size (max number of characters to read)
-    lea r9, [rel input_len]      ; r9: pointer to store the number of characters read
+;------------------------------
+;   User input
+;   Always returns \n\0
+    mov  rcx, [rel stdio_in]
+    lea  rdx, [rbp - 64]
+    mov  r8 , 64
+    lea  r9 , [rbp - 68]
     call ReadConsoleA
-;----------------------------------------------------------
+;------------------------------
 
-; Doesn't do a full string comparision
-; a little trick, COMPARE THE SIZE
-    mov rax, [rel input_len]
-; is it nothing?
-    cmp rax, 2
-    je  .nothing
-; else is it something starting with "t" ending with "e"
-    cmp rax, 6
-    je  .maybe_safety
-.not_safety:
-; else does it have "t" "r" at the end or "t" "e" or "j" "a" at the start
-    cmp rax, 12
-    je  .maybe_ts
-.not_tsjs:
-    jmp .anything
 
-.nothing:
-    mov rdx, nothing
-    mov r8 , nothing_len
-    call print
-    jmp .end_of_ifs
-.safety:
-    mov rdx, safety
-    mov r8, safety_len
-    call print
-    jmp .end_of_ifs
-.ew:
-    mov rdx, jts
-    mov r8, jts_len
-    call print
-    jmp .end_of_ifs
-    jmp .end_of_ifs
-.anything:
-    mov rdx, anything
-    mov r8, anything_len
-    call print
-    lea rdx, [rel input_buffer]  ; Pointer to the input buffer
-    mov r8,  [rel input_len]     ; Length of the input (from input_len variable)
-    call print
-.end_of_ifs:
+;------------------------------
+;   Fix the \n\0 len
+    mov  rax, [rbp - 68]
+    sub  rax, 2
+    mov  [rbp - 68],  rax
+;------------------------------
 
-; Return
-    mov rsp, rbp    ; mov stack back
-    pop rbp         ; Restore previous stack frame
 
-    mov ecx, 0      ; exit code
+;------------------------------
+    lea  rsi, [rbp - 64]
+    mov  rdi, rax
+.L1:
+    test dil, dil
+    jnz  .L2
+    mov  rdx, nothing
+    mov  r8 , nothing_len
+    call print
+    jmp .defer_WinMain
+.L2:
+    cmp  edi, type_len
+    jne  .L3
+    lea  rdx, [rel type]
+    call compare_str
+    test al, al
+    jz  .L3
+    mov  rdx, safety
+    mov  r8 , safety_len
+    call print
+    jmp .defer_WinMain
+.L3:
+    lea  rdx, [rel ts]
+    call compare_str
+    test al, al
+    jz  .L3A
+    jmp .L3B
+.L3A:
+    lea  rdx, [rel js_]
+    call compare_str
+    test al, al
+    jz  .L4
+.L3B:
+    mov  rdx, the_scripts
+    mov  r8 , scripts_len
+    call print
+    jmp .defer_WinMain
+.L4:
+    mov  rdx, ic
+    mov  r8 , ic_len
+    call print
+    mov  rdx, rsi
+    mov  r8 , rdi
+    call print
+;----------------------
+;   End of the program
+.defer_WinMain:
+    mov  rsp, rbp
+    pop  rbp
+
+    mov  rcx, 0
     call ExitProcess
-
-;-------------------------------------------------------------------
-
-.maybe_safety:
-    mov rcx, input_buffer
-    mov bl, byte [rcx]
-    cmp rbx, 't'
-    je .continue_safety
-    jmp .not_safety
-    .continue_safety:
-    mov bl, byte [rcx+3]
-    cmp rbx, 'e'
-    je .safety
-    jmp .not_safety
-
-; T y p e s c r i p t
-; 0 1 2 3 4 5 6 7 8 9
-
-.maybe_ts:
-    mov rcx, input_buffer
-    mov bl, byte [rcx]
-    cmp bl, 't'
-    jne .maybe_js
-    mov bl, byte [rcx+3]
-    cmp bl, 'e'
-    jne .maybe_js
-    mov bl, byte [rcx+6]
-    cmp bl, 'r'
-    jne .not_tsjs
-    mov bl, byte [rcx+9]
-    cmp bl, 't'
-    je .ew
-    jmp .not_tsjs
-
-.maybe_js:
-    mov rcx, input_buffer
-    mov bl, byte [rcx]
-    cmp bl, 'j'
-    jne .not_tsjs
-    mov bl, byte [rcx+3]
-    cmp bl, 'a'
-    jne .not_tsjs
-    mov bl, byte [rcx+6]
-    cmp bl, 'r'
-    jne .not_tsjs
-    mov bl, byte [rcx+9]
-    cmp bl, 't'
-    je .ew
-    jne .not_tsjs
-
-; J a v a s c r i p t
-; 0 1 2 3 4 5 6 7 8 9
