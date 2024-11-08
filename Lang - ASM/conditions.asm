@@ -11,7 +11,7 @@ section .data
 
     ts           db     "typescript"
     js_          db     "javascript"
-    tsjs_len     equ    $ - ts
+    tsjs_len     equ    $ - js_
 
     anything     db     "Or anything!"
     anything_len equ    $ - anything
@@ -20,7 +20,7 @@ section .data
     nothing      db     "That's nothing!"
     nothing_len  equ    $ - nothing
 
-    safety       db     "safety"
+    safety       db     "safety!"
     safety_len   equ    $ - safety
 
     the_scripts  db     "Ew ew ew ew away!"
